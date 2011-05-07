@@ -1,0 +1,24 @@
+/*
+ * deparker.h
+ *
+ *  Created on: Apr 18, 2011
+ *      Author: seba
+ */
+
+#ifndef DEPARKER_H_
+#define DEPARKER_H_
+
+unsigned int TaskDriverDeparker_PC;
+
+void myPrint(char * msg);
+
+void TaskDriverDeparker_Init();
+void TaskDriverDeparker_Main();
+
+void TaskDriverDeparker_00();
+void TaskDriverDeparker_01();
+void TaskDriverDeparker_02();
+void TaskDriverDeparker_03();
+
+
+#endif /* DEPARKER_H_ */

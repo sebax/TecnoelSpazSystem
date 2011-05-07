@@ -1,0 +1,111 @@
+//*************************************************************************************************
+//************** Task Termostato Sonda Carel Pannello Radiante Schedulato
+//************** Task Termostato Pannello Radiente su uscita PLC Controller
+//*************************************************************************************************
+
+/*** BeginHeader  TaskTherV00,TaskTherV00Init*/
+void TaskTherV00();
+void TaskTherV00_Init();
+/*** EndHeader  */
+
+unsigned int TaskTherV00_PC;
+unsigned int TaskTherV00_Timer00;
+unsigned int TaskTherV00_Counter1;
+unsigned int TaskTherV00_Counter2;
+
+void TaskTherV00_Init()
+{
+ TaskTherV00_PC=0;
+ TaskTherV00_Timer00=BiosIOGetNewTimer();
+ TaskTherV00_Counter1=0;
+ TaskTherV00_Counter2=0;
+ BiosIOSetBitReg(DCON_CNFPRE,0,1);
+ BiosIOSetBitReg(DCON_CNFPRE,2,1);
+}
+
+void TaskTherV00_00()
+{
+ BiosIOSetTimer(TaskTherV00_Timer00,0);
+ TaskTherV00_PC=1;
+}
+
+void TaskTherV00_01()
+{
+ if (!BiosIOGetBitReg(DCON_DCNI00,0))
+ {
+ TaskTherV00_PC=2;
+  //printf("Led ON %u %x\n",BiosIOGetReg(DCON_DCNI00),BiosIOGetReg(DCON_DCNI00));
+  //BiosIOSetLed(OUTPUT_LED_AUX,1);
+  //BiosIOSetTimer(TaskTherV00_Timer00,10);
+ }
+}
+
+void TaskTherV00_02()
+{
+ if (BiosIOGetBitReg(DCON_DCNI00,0))
+  {
+  if (BiosIOGetBitReg(DCON_DCNI00,1))
+   BiosIOAddReg(PIPPO,1);
+  else
+   BiosIOAddReg(PIPPO,-1);
+  TaskTherV00_PC=1;
+  //printf("Led OFF\n");
+  //BiosIOSetLed(OUTPUT_LED_AUX,0);
+  //BiosIOSetTimer(TaskTherV00_Timer00,10);
+  }
+ //TaskTherV00_PC=3;
+ //TaskTherV00_Counter2=0;
+}
+
+void TaskTherV00_03()
+{
+ auto int pippo;
+ if (BiosIOGetBitReg(PIPPO,0))
+  {
+  BiosIOSetBitReg(DCON_DCNO02,2,1);
+  }
+
+ if (BiosIOGetBitReg(DCON_DCNI00,1))
+ {
+  //BiosIOSetReg(PLUTO,1234);
+  //printf("Realy ON %u %x\n",BiosIOGetReg(DCON_DCNI00),BiosIOGetReg(DCON_DCNI00));
+  BiosIOSetBitReg(DCON_DCNO02,1,1);
+  BiosIOSetBitReg(SYST_OUTPU0,0,1);
+  BiosIOSetTimer(TaskTherV00_Timer00,10);
+ }
+ TaskTherV00_PC=4;
+}
+
+void TaskTherV00_04()
+{
+ if (!BiosIOGetBitReg(PIPPO,0))
+  {
+  BiosIOSetBitReg(DCON_DCNO02,2,0);
+  }
+
+ if (!BiosIOGetBitReg(DCON_DCNI00,1))
+  {
+  //printf("Relay OFF\n")6
+  //BiosIOSetReg(PLUTO,876);
+  BiosIOSetBitReg(DCON_DCNO02,1,0);
+  BiosIOSetBitReg(SYST_OUTPU0,0,0);
+  BiosIOSetTimer(TaskTherV00_Timer00,10);
+  }
+ TaskTherV00_PC=1;
+}
+
+void TaskTherV00()
+{
+ switch (TaskTherV00_PC)
+  							{
+ 							case 0: {TaskTherV00_00(); break;}
+   						case 1: {TaskTherV00_01(); break;}
+   						case 2: {TaskTherV00_02(); break;}
+   						case 3: {TaskTherV00_03(); break;}
+   						case 4: {TaskTherV00_04(); break;}
+                     }
+}
+
+
+
+

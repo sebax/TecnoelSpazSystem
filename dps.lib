@@ -1,0 +1,449 @@
+/*
+ * dps.c
+ *
+ *  Created on: Apr 18, 2011
+ *      Author: seba
+ */
+/*
+ * DPS.lib
+ *
+ *  Created on: Apr 18, 2011
+ *      Author: seba
+ */
+
+
+
+
+
+/*** BeginHeader TaskDPS_Init,TaskDPS_Main*/
+//pubbliche di stato
+void TaskDPS_Init();
+void TaskDPS_Main();
+//pubbliche
+//private di stato
+void TaskDPS_0000();		//boot
+void TaskDPS_9999();		//location unknown
+void TaskDPS_0100();		//oltre il limite di emergenza anteriore
+void TaskDPS_0200();		//sul limite di emergenza anteriore
+void TaskDPS_0300();		//oltre la posizione di testa
+void TaskDPS_0400();		//alla posizione di testa
+void TaskDPS_0500();		//in mezzo al campo
+void TaskDPS_0600();		//sul limite campo/carrello traslatore
+void TaskDPS_0700();
+void TaskDPS_0800();
+void TaskDPS_0900();
+void TaskDPS_1000();
+void TaskDPS_1100();
+void TaskDPS_1200();
+void TaskDPS_1300();
+void TaskDPS_1400();
+void TaskDPS_1500();
+void TaskDPS_1600();
+void TaskDPS_1700();
+//private
+/*** EndHeader */
+
+#define DPS_TIMEOUT 				3
+
+unsigned int TaskDPS_PC;
+unsigned int TaskDPS_Timer00;
+unsigned int TaskDPS_Recorder;
+
+void TaskDPS_Init()
+{
+ TaskDPS_PC=0;
+ //BiosIOSetReg(LOCALIZZAZIONE,??);
+ TaskDPS_Timer00=BiosIOGetNewTimer();
+ TaskDPS_Recorder=0;
+}
+
+
+void TaskDPS_Main()
+{
+	BiosIOSetReg(DPS_LOCATION,TaskDPS_PC);
+
+	if (TaskDPS_Recorder!=TaskDPS_PC)
+    {
+		printf("DPS TRANSIZIONE %d > %d \n",TaskDPS_Recorder,TaskDPS_PC); // debug
+		TaskDPS_Recorder=TaskDPS_PC;
+    }
+
+
+	switch (TaskDPS_PC)
+	{
+		case 0: 		{TaskDPS_0000(); break;}
+		case  9999: 	{TaskDPS_9999(); break;}
+		case   100: 	{TaskDPS_0100(); break;}
+		case   200: 	{TaskDPS_0200(); break;}
+		case   300: 	{TaskDPS_0300(); break;}
+		case   400: 	{TaskDPS_0400(); break;}
+		case   500: 	{TaskDPS_0500(); break;}
+		case   600: 	{TaskDPS_0600(); break;}
+		case   700: 	{TaskDPS_0700(); break;}
+		case   800: 	{TaskDPS_0800(); break;}
+		case   900: 	{TaskDPS_0900(); break;}
+		case   1000: 	{TaskDPS_1000(); break;}
+		case   1100: 	{TaskDPS_1100(); break;}
+		case   1200: 	{TaskDPS_1200(); break;}
+		case   1300: 	{TaskDPS_1300(); break;}
+		case   1400: 	{TaskDPS_1400(); break;}
+		case   1500: 	{TaskDPS_1500(); break;}
+		case   1600: 	{TaskDPS_1600(); break;}
+		case   1700: 	{TaskDPS_1700(); break;}
+	}
+}
+
+
+void TaskDPS_0000()
+{
+	//BOOT
+	//BiosIOSetTimer(TaskDPS_Timer00,DPS_TIMEOUT);
+
+
+	printf("DPS(%d) BOOT!\n",TaskDPS_PC); //DEBUG
+
+	TaskDPS_PC=9999;
+}
+
+void TaskDPS_9999()
+{
+
+	//ESECUZIONE STATO
+
+	//TRANSIZIONI
+	// andando indietro incontro una transizione qui elencata oppure scatta il timer
+	// entro nello stato
+	if (1)
+	{
+		//BiosIOSetTimer(TaskDPS_Timer00,DPS_TIMEOUT);
+
+		printf("DPS(%d) NON SO DOVE SONO!\n",TaskDPS_PC);
+		//TaskDPS_PC=2;
+
+		//qui dovrei pormi in uno stato di errore
+		printf("DPS(%d) FACCIO FINTA DI SAPERLO!\n",TaskDPS_PC);
+		TaskDPS_PC=100; // DEBUG: vado a 100 per debug
+	}
+}
+
+
+
+
+
+
+
+void TaskDPS_0100()
+{
+	//ESECUZIONE STATO
+
+	//TRANSIZIONI
+	if (Get_SEN01_STATE())
+	{
+
+		TaskDPS_PC=200;
+	}
+}
+
+void TaskDPS_0200()
+{
+	//ESECUZIONE STATO
+
+
+	//TRANSIZIONI
+	if (!Get_SEN01_STATE())
+	{
+		if (Get_ENGINE_VERSUS())
+		{
+			TaskDPS_PC=100;
+		}
+		else
+		{
+			TaskDPS_PC=300;
+
+		}
+	}
+}
+
+void TaskDPS_0300()
+{
+	//ESECUZIONE STATO
+
+	//TRANSIZIONI
+   if (Get_SEN01_STATE())
+    {
+     TaskDPS_PC=200;
+     return;
+    }
+
+   if (Get_SEN03_STATE())
+    {
+     TaskDPS_PC=400;
+     return;
+    }
+}
+
+void TaskDPS_0400()
+{
+	//ESECUZIONE STATO
+
+	//TRANSIZIONI
+
+   if (!Get_SEN03_STATE())
+	{
+		if (Get_ENGINE_VERSUS())
+		{
+			TaskDPS_PC=300;
+		}
+		else
+		{
+			TaskDPS_PC=500;
+
+		}
+	}
+
+}
+
+void TaskDPS_0500()
+{
+	//ESECUZIONE STATO
+
+	//TRANSIZIONI
+   if (Get_SEN03_STATE())
+    {
+     TaskDPS_PC=400;
+     return;
+    }
+
+   if (Get_SEN04_STATE())
+    {
+     TaskDPS_PC=600;
+     return;
+    }
+}
+
+void TaskDPS_0600()
+{
+	//ESECUZIONE STATO
+
+	//TRANSIZIONI
+
+   if (!Get_SEN04_STATE())
+	{
+		if (Get_ENGINE_VERSUS())
+		{
+			TaskDPS_PC=500;
+		}
+		else
+		{
+			TaskDPS_PC=700;
+
+		}
+	}
+}
+
+void TaskDPS_0700()
+{
+	//ESECUZIONE STATO
+
+	//TRANSIZIONI
+   if (Get_SEN04_STATE())
+    {
+     TaskDPS_PC=600;
+     return;
+    }
+
+   if (Get_SEN05_STATE())
+    {
+     TaskDPS_PC=800;
+     return;
+    }
+}
+
+void TaskDPS_0800()
+{
+	//ESECUZIONE STATO
+
+	//TRANSIZIONI
+   if (!Get_SEN05_STATE())
+    {
+     TaskDPS_PC=700;
+     return;
+    }
+
+   if (Get_SEN02_STATE())
+    {
+     TaskDPS_PC=900;
+     return;
+    }
+
+
+}
+
+void TaskDPS_0900()
+{
+	//ESECUZIONE STATO
+
+	//TRANSIZIONI
+   if (!Get_SEN02_STATE())
+    {
+     TaskDPS_PC=800;
+     return;
+    }
+
+   if (Get_SEN03_STATE())
+    {
+     TaskDPS_PC=1000;
+     return;
+    }
+
+}
+
+void TaskDPS_1000()
+{
+	//ESECUZIONE STATO
+
+	//TRANSIZIONI
+   if (!Get_SEN03_STATE())
+    {
+     TaskDPS_PC=900;
+     return;
+    }
+
+   if (!Get_SEN02_STATE())
+    {
+     TaskDPS_PC=1100;
+     return;
+    }
+
+}
+
+void TaskDPS_1100()
+{
+	//ESECUZIONE STATO
+
+	//TRANSIZIONI
+   if (Get_SEN02_STATE())
+    {
+     TaskDPS_PC=1000;
+     return;
+    }
+
+   if (!Get_SEN03_STATE())
+    {
+     TaskDPS_PC=1200;
+     return;
+    }
+
+}
+
+void TaskDPS_1200()
+{
+	//ESECUZIONE STATO
+
+	//TRANSIZIONI
+   if (Get_SEN03_STATE())
+    {
+     TaskDPS_PC=1100;
+     return;
+    }
+
+   if (!Get_SEN05_STATE())
+    {
+     TaskDPS_PC=1300;
+     return;
+    }
+
+}
+
+void TaskDPS_1300()
+{
+	//TRANSIZIONI
+   if (Get_SEN05_STATE())
+    {
+     TaskDPS_PC=1200;
+     return;
+    }
+
+   if (Get_SEN02_STATE())
+    {
+     TaskDPS_PC=1400;
+     return;
+    }
+}
+
+void TaskDPS_1400()
+{
+	//ESECUZIONE STATO
+
+	//TRANSIZIONI
+
+   if (!Get_SEN02_STATE())
+	{
+		if (Get_ENGINE_VERSUS())
+		{
+			TaskDPS_PC=1300;
+		}
+		else
+		{
+			TaskDPS_PC=1500;
+
+		}
+	}
+}
+
+void TaskDPS_1500()
+{
+	//ESECUZIONE STATO
+
+	//TRANSIZIONI
+   if (Get_SEN02_STATE())
+    {
+     TaskDPS_PC=1400;
+     return;
+    }
+
+   if (Get_SEN04_STATE())
+    {
+     TaskDPS_PC=1600;
+     return;
+    }
+
+}
+
+void TaskDPS_1600()
+{
+	//ESECUZIONE STATO
+
+	//TRANSIZIONI
+
+   if (!Get_SEN04_STATE())
+	{
+		if (Get_ENGINE_VERSUS())
+		{
+			TaskDPS_PC=1500;
+		}
+		else
+		{
+			TaskDPS_PC=1700;
+
+		}
+	}
+}
+
+void TaskDPS_1700()
+{
+	//ESECUZIONE STATO
+
+	//TRANSIZIONI
+
+   if (Get_SEN04_STATE())
+	{
+		TaskDPS_PC=1600;
+
+	}
+}
+
+
+
+
+

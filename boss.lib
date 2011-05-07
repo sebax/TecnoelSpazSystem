@@ -1,0 +1,71 @@
+/*
+ *
+ *  Created on: Apr 18, 2011
+ *      Author: seba
+ */
+
+
+/*** BeginHeader TaskBoss_Init,TaskBoss_Main*/
+void TaskBoss_Init();
+void TaskBoss_Main();
+void TaskBoss_00();
+void TaskBoss_01();
+void TaskBoss_02();
+void TaskBoss_03();
+/*** EndHeader */
+
+unsigned int TaskBoss_PC;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void TaskBoss_Init()
+{
+ TaskBoss_PC=0;
+}
+
+void TaskBoss_Main()
+{
+	switch (TaskBoss_PC)
+	{
+		case 0: {TaskBoss_00(); break;}
+		case 1: {TaskBoss_01(); break;}
+		case 2: {TaskBoss_02(); break;}
+		case 3: {TaskBoss_03(); break;}
+	}
+}
+
+
+void TaskBoss_00()
+{
+ TaskBoss_PC=1;
+}
+
+void TaskBoss_01()
+{
+ TaskBoss_PC=2;
+}
+
+void TaskBoss_02()
+{
+ TaskBoss_PC=3;
+}
+
+void TaskBoss_03()
+{
+ TaskBoss_PC=0;
+}

@@ -1,0 +1,74 @@
+/*
+ * safeguard.lib
+ *
+ *  Created on: Apr 18, 2011
+ *      Author: seba
+ */
+
+
+
+
+
+/*** BeginHeader TaskSG_Init,TaskSG_Main*/
+//pubbliche di stato
+void TaskSG_Init();
+void TaskSG_Main();
+//pubbliche
+//private di stato
+void TaskSG_00();
+void TaskSG_01();
+//private
+/*** EndHeader */
+
+unsigned int TaskSG_PC;
+unsigned int TaskSG_Timer00;
+
+void TaskSG_Init()
+{
+ TaskSG_PC=0;
+ //BiosIOSetReg(LOCALIZZAZIONE,??);
+ TaskSG_Timer00=BiosIOGetNewTimer();
+}
+
+
+void TaskSG_Main()
+{
+	switch (TaskSG_PC)
+	{
+		case 0: 	{TaskSG_00(); break;}
+		case 1: 	{TaskSG_01(); break;}
+	}
+}
+
+
+void TaskSG_00()
+{
+	//BOOT
+	BiosIOSetTimer(TaskSG_Timer00,5);
+
+	TaskSG_PC=1;
+}
+
+void TaskSG_01()
+{
+
+
+	//TRANSIZIONI
+	if (BiosIOGetTimer(TaskSG_Timer00))
+	{
+		//ESECUZIONE STATO
+
+		if (BiosIOGetBitReg(SG_DEBUG_REG,SG_DEBUG_DPS_BIT))
+			printf("SG: SEN01-2-3-4-5[%d-%d-%d-%d-%d] / ENGINE_VERSUS[%d]\n",Get_SEN01_STATE(),Get_SEN02_STATE(),Get_SEN03_STATE(),Get_SEN04_STATE(),Get_SEN05_STATE(),Get_ENGINE_VERSUS());
+		if (BiosIOGetBitReg(SG_DEBUG_REG,SG_DEBUG_LPS_BIT))
+			printf("SG: LPS_POSITION[%d] / LPS_SPEED[%d]\n",Get_LPS_POSITION(),Get_LPS_SPEED());
+		//if (BiosIOGetBitReg(IO_SG_DEBUG_REG,IO_SG_DEBUG_ENGINE_BIT))
+			//printf("SG: ENGINE_SPEED[%d] / LPS_SPEED[%d]\n",Get_LPS_POSITION(),Get_LPS_SPEED());
+
+
+
+		BiosIOSetTimer(TaskSG_Timer00,5);
+	}
+}
+
+

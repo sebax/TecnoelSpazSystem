@@ -1,0 +1,84 @@
+/*
+ * cleaner.lib
+ *
+ *  Created on: Apr 18, 2011
+ *      Author: seba
+ */
+
+
+
+
+void myPrint(char * msg);
+
+void TaskDriverCleaner_Init();
+void TaskDriverCleaner_Main();
+
+void TaskDriverCleaner_00();
+void TaskDriverCleaner_01();
+void TaskDriverCleaner_02();
+void TaskDriverCleaner_03();
+
+
+unsigned int TaskDriverCleaner_PC;
+
+
+
+
+void TaskDriverCleaner_Init()
+{
+ TaskDriverCleaner_PC=0;
+}
+
+void TaskDriverCleaner_Main()
+{
+	switch (TaskDriverCleaner_PC)
+	{
+		case 0: {TaskDriverCleaner_00(); break;}
+		case 1: {TaskDriverCleaner_01(); break;}
+		case 2: {TaskDriverCleaner_02(); break;}
+		case 3: {TaskDriverCleaner_03(); break;}
+	}
+}
+
+
+void TaskDriverCleaner_00()
+{
+#ifdef DRIVERCLEANER_DEBUG
+	myPrint("esecuzione");
+#endif
+
+ TaskDriverCleaner_PC=1;
+}
+
+void TaskDriverCleaner_01()
+{
+#ifdef DRIVERCLEANER_DEBUG
+	myPrint("esecuzione");
+#endif
+
+ TaskDriverCleaner_PC=2;
+}
+
+void TaskDriverCleaner_02()
+{
+#ifdef DRIVERCLEANER_DEBUG
+	myPrint("esecuzione");
+#endif
+
+ TaskDriverCleaner_PC=3;
+}
+
+void TaskDriverCleaner_03()
+{
+#ifdef DRIVERCLEANER_DEBUG
+	myPrint("esecuzione");
+#endif
+
+ TaskDriverCleaner_PC=0;
+}
+
+void myPrint(char * msg)
+{
+	printf("DRIVERCLEANER(PC=%d): %s\n", TaskDriverCleaner_PC, msg);
+}
+

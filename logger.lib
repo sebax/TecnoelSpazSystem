@@ -1,0 +1,24 @@
+/*
+ * logger.h
+ *
+ *  Created on: Apr 18, 2011
+ *      Author: seba
+ */
+
+#ifndef LOGGER_H_
+#define LOGGER_H_
+
+unsigned int TaskLogger_PC;
+
+void myPrint(char * msg);
+
+void TaskLogger_Init();
+void TaskLogger_Main();
+
+void TaskLogger_00();
+void TaskLogger_01();
+void TaskLogger_02();
+void TaskLogger_03();
+
+
+#endif /* LOGGER_H_ */

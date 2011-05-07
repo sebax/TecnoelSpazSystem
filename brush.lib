@@ -1,0 +1,66 @@
+/*
+ *
+ *  Created on: Apr 18, 2011
+ *      Author: seba
+ */
+
+
+/*** BeginHeader TaskBrush_Init,TaskBrush_Main*/
+void TaskBrush_Init();
+void TaskBrush_Main();
+void TaskBrush_00();
+void TaskBrush_01();
+void TaskBrush_02();
+void TaskBrush_03();
+/*** EndHeader */
+
+
+unsigned int TaskBrush_PC;
+
+
+
+
+
+
+
+void TaskBrush_Init()
+{
+ TaskBrush_PC=0;
+}
+
+void TaskBrush_Main()
+{
+	switch (TaskBrush_PC)
+	{
+		case 0: {TaskBrush_00(); break;}
+		case 1: {TaskBrush_01(); break;}
+		case 2: {TaskBrush_02(); break;}
+		case 3: {TaskBrush_03(); break;}
+	}
+}
+
+
+void TaskBrush_00()
+{
+ TaskBrush_PC=1;
+}
+
+void TaskBrush_01()
+{
+
+ TaskBrush_PC=2;
+}
+
+void TaskBrush_02()
+{
+
+ TaskBrush_PC=3;
+}
+
+void TaskBrush_03()
+{
+
+ TaskBrush_PC=0;
+}
+
+

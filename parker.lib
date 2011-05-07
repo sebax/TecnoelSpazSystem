@@ -1,0 +1,24 @@
+/*
+ * parker.h
+ *
+ *  Created on: Apr 18, 2011
+ *      Author: seba
+ */
+
+#ifndef PARKER_H_
+#define PARKER_H_
+
+unsigned int TaskDriverParker_PC;
+
+void myPrint(char * msg);
+
+void TaskDriverParker_Init();
+void TaskDriverParker_Main();
+
+void TaskDriverParker_00();
+void TaskDriverParker_01();
+void TaskDriverParker_02();
+void TaskDriverParker_03();
+
+
+#endif /* PARKER_H_ */

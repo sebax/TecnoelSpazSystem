@@ -1,0 +1,118 @@
+//*************************************************************************************************
+//************** Task Esecuzione Macro
+//*************************************************************************************************
+
+/*** BeginHeader  TaskMacrV00,TaskMacrV00Init,TaskMacrV00_Execute*/
+void TaskMacrV00();
+void TaskMacrV00_Init();
+void TaskMacrV00_Execute(char AMacro);
+/*** EndHeader  */
+
+unsigned int  TaskMacrV00_PC;
+unsigned int  TaskMacrV00_Timer00;
+unsigned int  TaskMacrV00_Counter1;
+unsigned int  TaskMacrV00_Counter2;
+unsigned long TaskMacrV00_ExT0;
+
+void TaskMacrV00_Init()
+{
+ TaskMacrV00_PC=0;
+ TaskMacrV00_Timer00=BiosIOGetNewTimer();
+ TaskMacrV00_Counter1=0;
+ TaskMacrV00_Counter2=0;
+ TaskMacrV00_ExT0=0;
+}
+
+void TaskMacrV00_SetTimer(char Value) // Max Timer = 7 Max Value = 31
+{
+ auto char Timer;
+ auto char SetValue;
+ auto char Prescaler;
+ Timer=(Value & 0xE0)/0x20;
+ SetValue=(Value & 0x1F);
+ Prescaler=BiosIOGetReg(MACR_TIMR0C+Timer*2)/0x100;
+ //printf("Macro TimerSet: %d %d \n",Timer,SetValue);
+ BiosIOSetReg(MACR_TIMR0V+Timer*2,SetValue*Prescaler);
+}
+
+void TaskMacrV00_00()
+{
+ auto char Cont1;
+ auto unsigned int Test;
+ unsigned long	t0;
+ t0 = read_rtc();
+ if (t0==TaskMacrV00_ExT0) return;
+ TaskMacrV00_ExT0=t0;
+ for (Cont1=0; Cont1<8; Cont1++)
+  {
+   Test=BiosIOGetReg(MACR_TIMR0V+Cont1*2);
+   if (Test>0) BiosIOSetReg(MACR_TIMR0V+Cont1*2,Test-1);
+   if (Test==1) if ((BiosIOGetReg(MACR_TIMR0C+Cont1*2) & 0x00FF)!=0) TaskMacrV00_Execute((BiosIOGetReg(MACR_TIMR0C+Cont1*2) & 0x00FF));
+  }
+}
+
+void TaskMacrV00_01()
+{
+}
+
+void TaskMacrV00_02()
+{
+}
+
+void TaskMacrV00()
+{
+ switch (TaskMacrV00_PC)
+  							{
+ 							case 0: {TaskMacrV00_00(); break;}
+   						case 1: {TaskMacrV00_01(); break;}
+   						case 2: {TaskMacrV00_02(); break;}
+							}
+}
+
+void TaskMacrV00_Execute(char AMacro)
+{
+ auto unsigned int ProgCounter;
+ auto unsigned int Test;
+ auto unsigned int Dati;
+ auto unsigned int Comando;
+ auto unsigned int End;
+ auto unsigned int BlindTest;
+ auto char Debug;
+ if (AMacro>20) return;
+ Debug=0;
+ ProgCounter=AMacro;
+ Comando=100;
+ Test=1;
+ End=0;
+ if (Debug) printf("Macro Execution: %d \n",ProgCounter);
+ while (End==0 && ProgCounter<MACR_LASTRE-MACR_FIRSTR)
+  {
+  if (Debug) printf("Test Pc: %d\n",ProgCounter);
+  Comando=BiosIOGetReg(MACR_FIRSTR+ProgCounter);
+  Comando=(BiosIOGetReg(MACR_FIRSTR+ProgCounter) & 0x3F00)/0x100;
+  End=(BiosIOGetReg(MACR_FIRSTR+ProgCounter) & 0x8000);
+  BlindTest=(BiosIOGetReg(MACR_FIRSTR+ProgCounter) & 0x4000)==0;
+  Dati=BiosIOGetReg(MACR_FIRSTR+ProgCounter) & 0x00FF;
+  if (Debug) printf("Comando: %u\n",Comando);
+  if (Debug) printf("End: %u\n",End);
+  switch (Comando)
+   {
+   case 0x00: {if (Debug) printf("Macro End\n");                      End=1;                                    break;}
+   case 0x01: {if (Debug) printf("Macro Jump\n");                     if (Test | BlindTest) ProgCounter=Dati-1;  break;}
+   case 0x02: {if (Debug) printf("Macro Inv Test\n");                 if (Test) Test=0; else Test=1;        break;}
+   case 0x03: {if (Debug) printf("Macro Test Digitale On        \n"); Test=(MainGetApplChannel(Dati)==1);   break;}
+   case 0x04: {if (Debug) printf("Macro Test Digitale Off       \n"); Test=(MainGetApplChannel(Dati)==0);   break;}
+   case 0x05: {if (Debug) printf("Macro Attiva    Canale\n");         if (Test | BlindTest) MainSetApplChannel(Dati,1); break;}
+   case 0x06: {if (Debug) printf("Macro DisAttiva Canale\n");         if (Test | BlindTest) MainSetApplChannel(Dati,0); break;}
+   case 0x07: {if (Debug) printf("Macro Imposta Timer   \n");         if (Test | BlindTest) TaskMacrV00_SetTimer(Dati); break;}
+   else: {End=1; break;}
+   }
+  if (Debug) printf("Test Result: %d\n",Test);
+  ProgCounter++;
+  if (Debug) printf("Test Pc: %d\n",ProgCounter);
+  }
+}
+
+
+
+

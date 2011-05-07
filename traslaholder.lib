@@ -1,0 +1,23 @@
+/*
+ * positionholder.h
+ *
+ *  Created on: Apr 18, 2011
+ *      Author: seba
+ */
+
+#ifndef TRASLAHOLDER_H_
+#define TRASLAHOLDER_H_
+
+unsigned int TaskDriverTraslaholder_PC;
+
+void myPrint(char * msg);
+
+void TaskDriverTraslaholder_Init();
+void TaskDriverTraslaholder_Main();
+
+void TaskDriverTraslaholder_00();
+void TaskDriverTraslaholder_01();
+void TaskDriverTraslaholder_02();
+void TaskDriverTraslaholder_03();
+
+#endif /* TRASLAHOLDER_H_ */

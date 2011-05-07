@@ -1,0 +1,257 @@
+/*
+ * io.lib
+ *
+ *  Created on: Apr 18, 2011
+ *      Author: seba
+ *
+ *  Funzioni di basso livello per leggere/comandare gli I/O.
+ *
+ */
+
+
+
+
+
+/*** BeginHeader Set_PIS01_DIRECTION,Set_PIS01_ENABLE,Get_PIS01_POSITION,Get_PIS01_VOLTAGE,Set_PIS01_REFERENCE,Get_AZM01_ALARM,Set_AZM01_ENABLE,Get_AZM01_VOLTAGE,Set_AZM01_DIRSPEED,Get_AZS01_ALARM,Set_AZS01_ENABLE,Get_AZS01_VOLTAGE,Set_AZS01_DIRSPEED,Set_AUX01_ENABLE,Get_AUX01_VOLTAGE,Get_PFV01_VOLTAGE,Get_BAT01_VOLTAGE,Get_BAT12_VOLTAGE,Get_SEN01_STATE,Get_SEN01_UNLOCKED,Set_SEN01_LOCK,Get_SEN02_STATE,Get_SEN03_STATE,Get_SEN04_STATE,Get_SEN04_UNLOCKED,Set_SEN04_LOCK,Set_SEN04_BYPASS,Get_SEN05_STATE,Set_SEN05_BYPASS,Get_ENC01_STATE,Get_KEY01_STATE,Get_FUN01_STATE,Set_PWT01_ENABLE,Set_PWN01_ENABLE */
+//pubbliche
+
+void Set_PIS01_DIRECTION(char newVal);
+void Set_PIS01_ENABLE(char newVal);
+int Get_PIS01_POSITION();
+int Get_PIS01_VOLTAGE();
+void Set_PIS01_REFERENCE(int newVal);
+char Get_AZM01_ALARM();
+void Set_AZM01_ENABLE(char newVal);
+int Get_AZM01_VOLTAGE();
+void Set_AZM01_DIRSPEED(int newVal);
+char Get_AZS01_ALARM();
+void Set_AZS01_ENABLE(char newVal);
+int Get_AZS01_VOLTAGE();
+void Set_AZS01_DIRSPEED(int newVal);
+void Set_AUX01_ENABLE(char newVal);
+int Get_AUX01_VOLTAGE();
+int Get_PFV01_VOLTAGE();
+int Get_BAT01_VOLTAGE();
+int Get_BAT12_VOLTAGE();
+char Get_SEN01_STATE();					// 1:eccitato 0:non eccitato
+char Get_SEN01_UNLOCKED();
+void Set_SEN01_LOCK(char newVal);
+char Get_SEN02_STATE();					// 1:eccitato 0:non eccitato
+char Get_SEN03_STATE();					// 1:eccitato 0:non eccitato
+char Get_SEN04_STATE();					// 1:eccitato 0:non eccitato
+char Get_SEN04_UNLOCKED();
+void Set_SEN04_LOCK(char newVal);
+void Set_SEN04_BYPASS(char newVal);
+char Get_SEN05_STATE();					// 1:eccitato 0:non eccitato
+void Set_SEN05_BYPASS(char newVal);
+char Get_ENC01_STATE();
+char Get_KEY01_STATE();
+char Get_FUN01_STATE();
+void Set_PWT01_ENABLE(char newVal);
+void Set_PWN01_ENABLE(char newVal);
+/*** EndHeader */
+
+
+
+
+void Set_PIS01_DIRECTION(char newVal)
+{
+
+}
+
+void Set_PIS01_ENABLE(char newVal)
+{
+
+}
+
+int Get_PIS01_POSITION()
+{
+
+}
+
+int Get_PIS01_VOLTAGE()
+{
+
+}
+
+void Set_PIS01_REFERENCE(int newVal)
+{
+
+}
+
+char Get_AZM01_ALARM()
+{
+
+}
+
+void Set_AZM01_ENABLE(char newVal)
+{
+
+}
+
+int Get_AZM01_VOLTAGE()
+{
+
+}
+
+
+void Set_AZM01_DIRSPEED(int newVal)
+{
+
+}
+
+
+char Get_AZS01_ALARM()
+{
+
+}
+
+
+void Set_AZS01_ENABLE(char newVal)
+{
+
+}
+
+
+int Get_AZS01_VOLTAGE()
+{
+
+}
+
+
+void Set_AZS01_DIRSPEED(int newVal)
+{
+
+}
+
+
+void Set_AUX01_ENABLE(char newVal)
+{
+
+}
+
+
+int Get_AUX01_VOLTAGE()
+{
+
+}
+
+
+int Get_PFV01_VOLTAGE()
+{
+
+}
+
+
+int Get_BAT01_VOLTAGE()
+{
+
+}
+
+
+int Get_BAT12_VOLTAGE()
+{
+
+}
+
+
+char Get_SEN01_STATE()
+{
+	return !BiosIOGetBitReg(IO_SEN01_STATE_REG,IO_SEN01_STATE_BIT);
+}
+
+
+char Get_SEN01_UNLOCKED()
+{
+
+}
+
+
+void Set_SEN01_LOCK(char newVal)
+{
+
+}
+
+
+char Get_SEN02_STATE()
+{
+	return BiosIOGetBitReg(IO_SEN02_STATE_REG,IO_SEN02_STATE_BIT);
+}
+
+
+char Get_SEN03_STATE()
+{
+	return BiosIOGetBitReg(IO_SEN03_STATE_REG,IO_SEN03_STATE_BIT);
+}
+
+
+char Get_SEN04_STATE()
+{
+	return !BiosIOGetBitReg(IO_SEN04_STATE_REG,IO_SEN04_STATE_BIT);
+}
+
+
+
+char Get_SEN04_UNLOCKED()
+{
+
+}
+
+
+void Set_SEN04_LOCK(char newVal)
+{
+
+}
+
+
+void Set_SEN04_BYPASS(char newVal)
+{
+
+}
+
+
+char Get_SEN05_STATE()
+{
+	return !BiosIOGetBitReg(IO_SEN05_STATE_REG,IO_SEN05_STATE_BIT);
+}
+
+
+void Set_SEN05_BYPASS(char newVal)
+{
+
+}
+
+
+char Get_ENC01_STATE()
+{
+	return BiosIOGetBitReg(IO_ENC01_STATE_REG,IO_ENC01_STATE_BIT);
+}
+
+
+char Get_KEY01_STATE()
+{
+
+}
+
+
+char Get_FUN01_STATE()
+{
+
+}
+
+
+void Set_PWT01_ENABLE(char newVal)
+{
+
+}
+
+
+void Set_PWN01_ENABLE(char newVal)
+{
+
+}
+
+
+
+
+

@@ -1,0 +1,86 @@
+/*
+ * communicationmanager.c
+ *
+ *  Created on: Apr 18, 2011
+ *      Author: seba
+ */
+
+
+
+
+void myPrint(char * msg);
+
+void TaskCommunicationManager_Init();
+void TaskCommunicationManager_Main();
+
+void TaskCommunicationManager_00();
+void TaskCommunicationManager_01();
+void TaskCommunicationManager_02();
+void TaskCommunicationManager_03();
+
+
+
+
+
+unsigned int TaskCommunicationManager_PC;
+
+
+
+void TaskCommunicationManager_Init()
+{
+ TaskCommunicationManager_PC=0;
+}
+
+void TaskCommunicationManager_Main()
+{
+	switch (TaskCommunicationManager_PC)
+	{
+		case 0: {TaskCommunicationManager_00(); break;}
+		case 1: {TaskCommunicationManager_01(); break;}
+		case 2: {TaskCommunicationManager_02(); break;}
+		case 3: {TaskCommunicationManager_03(); break;}
+	}
+}
+
+
+void TaskCommunicationManager_00()
+{
+#ifdef COMMUNICATIONMANAGER_DEBUG
+	myPrint("esecuzione");
+#endif
+
+ TaskCommunicationManager_PC=1;
+}
+
+void TaskCommunicationManager_01()
+{
+#ifdef COMMUNICATIONMANAGER_DEBUG
+	myPrint("esecuzione");
+#endif
+
+ TaskCommunicationManager_PC=2;
+}
+
+void TaskCommunicationManager_02()
+{
+#ifdef COMMUNICATIONMANAGER_DEBUG
+	myPrint("esecuzione");
+#endif
+
+ TaskCommunicationManager_PC=3;
+}
+
+void TaskCommunicationManager_03()
+{
+#ifdef COMMUNICATIONMANAGER_DEBUG
+	myPrint("esecuzione");
+#endif
+
+ TaskCommunicationManager_PC=0;
+}
+
+void myPrint(char * msg)
+{
+	printf("COMMUNICATIONMANAGER(PC=%d): %s\n", TaskCommunicationManager_PC, msg);
+}
+

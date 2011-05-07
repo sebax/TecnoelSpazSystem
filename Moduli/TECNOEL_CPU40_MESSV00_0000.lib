@@ -1,0 +1,129 @@
+//*************************************************************************************************
+//************** Gestione buffer messaggi
+//*************************************************************************************************
+
+/* Tracciato Messaggi: (33 caratteri)
+   (GGMMAAHHMMSS 	= 	TimeStamp)
+   (CCC				=	Codice)
+   (V					=	OnLine)
+   (T					=	Tipo)
+   (DD....DD      =  Dati Letti)
+   Ticket Emesso (16):	GGMMAAHHMMSS#20V0DDDDDDDDDDDDDDDD
+   Ticket Letto  (16):	GGMMAAHHMMSS#21V1DDDDDDDDDDDDDDDD
+   Barcode Letto (13):  GGMMAAHHMMSS#21V2DDDDDDDDDDDDD000
+   Proxi Letto   (10):	GGMMAAHHMMSS#21V3DDDDDDDDDD000000 */
+
+/*** BeginHeader TaskMessV00,TaskMessV00_MessaggiPush*/
+void TaskMessV00();
+void TaskMessV00_Init();
+void TaskMessV00_Clear();
+void TaskMessV00_Connected();
+void TaskMessV00_Unconnected();
+void TaskMessV00_SetData(char *Ingresso);
+void TaskMessV00_MessaggioPush(char Modulo[5], char Periferica, char Codice[4]);
+unsigned int TaskMessV00_MessaggioPop(char *Stringa);
+/*** EndHeader  */
+
+#define TaskMessV00_DTB      16384  // Dimensione Buffer messaggi
+#define TaskMessV00_DSM        100  // Dimensione Max Stringa Messaggio
+
+unsigned int  TaskMessV00_PC;
+unsigned long TaskMessV00_ATB;      // Address Buffer Messaggi
+unsigned int  TaskMessV00_Test;     // Punta alla posizione del primo messaggio inserito
+unsigned int  TaskMessV00_Coda;     // Punta alla posizione del messaggio da inserire
+unsigned int  TaskMessV00_Last;     // Punta alla posizione del primo messaggio da comunicare
+char          TaskMessV00_Conn;     // Stato di connessione
+char          TaskMessV00_Data[TaskMessV00_DSM];
+
+void TaskMessV00_Init()
+{
+ TaskMessV00_ATB=xalloc(TaskMessV00_DTB);
+ TaskMessV00_Last=0;
+ TaskMessV00_Data[0]=0;
+ TaskMessV00_Conn=0;
+ TaskMessV00_PC=0;
+}
+
+void TaskMessV00_Clear()
+{
+ TaskMessV00_Test=0;
+ TaskMessV00_Coda=0;
+ TaskMessV00_Last=0;
+ BiosIOSetReg(MESS_PRESEN,0);
+}
+
+void TaskMessV00_Unconnected()
+{
+ TaskMessV00_Conn=0;
+ TaskMessV00_Last=0;
+}
+
+void TaskMessV00_Connected()
+{
+ TaskMessV00_Conn=1;
+}
+
+void TaskMessV00_SetData(char *Ingresso)
+{
+ strcpy(TaskMessV00_Data,Ingresso);
+ //printf("Lunghezza Data: %d\n",strlen(TaskMessV00_Data));
+ //TaskMessV00_Data[18]=0;
+}
+
+void TaskMessV00_MessaggioPush(char Modulo[5], char Periferica, char Codice[4])
+{
+ auto unsigned long BufferPointer;
+ auto char TempMessaggio[TaskMessV00_DSM+1];
+ //if (TaskMessV00_InCoda==TaskMessV00_DTB) return;
+ BiosUTILCreaTimeStamp(TempMessaggio); TempMessaggio[12]=0;
+ strcat(TempMessaggio,Modulo);
+ BiosUTIL2HEXStrAppend(TempMessaggio,Periferica);
+ strcat(TempMessaggio,Codice);
+ if ((TaskMessV00_Conn) && (TaskMessV00_Last=TaskMessV00_Coda)) strcat(TempMessaggio,"L"); else strcat(TempMessaggio,"H");
+ strcat(TempMessaggio,TaskMessV00_Data);
+ //printf("Lunghezza Messaggio: %d\n",strlen(TempMessaggio));
+ //strncpy(&TempMessaggio[12],Testo,TaskMessV00_DSM-11);
+ BufferPointer=TaskMessV00_ATB+TaskMessV00_Coda;
+ root2xmem(BufferPointer,TempMessaggio,strlen(TempMessaggio)+1);
+ TaskMessV00_Coda=TaskMessV00_Coda+strlen(TempMessaggio)+1;
+ //if (TaskMessV00_Testa==TaskMessV00_DTB) TaskMessV00_Testa=0;
+ BiosIOAddReg(MESS_PRESEN,1);
+ //if (TaskMessV00_InCoda>TaskMessV00_DTB) TaskMessV00_InCoda=TaskMessV00_DTB;
+ //printf("MessaggioNew: %s\n",TempMessaggio);
+ #ifdef DEBUG
+ printf("MessaggiPres: %u\n",BiosIOGetReg(MESS_PRESEN));
+ #endif
+ //printf("MessaggiTest: %d\n",TaskMessV00_Test);
+ //printf("MessaggiCoda: %d\n",TaskMessV00_Coda);
+ BiosIOSetReg(MESS_FREEBY,TaskMessV00_DTB-TaskMessV00_Coda);
+ strcpy(TaskMessV00_Data,"");
+}
+
+unsigned int TaskMessV00_MessaggioPop(char *Stringa)
+{
+ auto unsigned long BufferPointer;
+ auto char TempStr[TaskMessV00_DSM];
+ if (BiosIOGetReg(MESS_PRESEN)==0)       {return 0;}
+ if (TaskMessV00_Last>=TaskMessV00_Coda) {return 0;}
+ TempStr[0]=0;
+ BufferPointer=TaskMessV00_ATB+TaskMessV00_Test+TaskMessV00_Last;
+ xmem2root(TempStr,BufferPointer,TaskMessV00_DSM);
+ TempStr[TaskMessV00_DSM-1]=0;
+ strcat(Stringa,TempStr);
+ TaskMessV00_Last=TaskMessV00_Last+strlen(TempStr)+1;
+ return strlen(Stringa);
+}
+
+void TaskMessV00_ClearFirst()
+{
+ //TaskMessV00_Pres--;
+ //TaskMessV00_Test=TaskMessV00_Test+strlen(TempStr)+1;
+ if (BiosIOGetReg(MESS_PRESEN)==0) {TaskMessV00_Test=0; TaskMessV00_Coda=0;}
+}
+
+void TaskMessV00()
+{
+ BiosIOSetBitFlag(FLAG_MESSAGGIO_PRESENTE,(BiosIOGetReg(MESS_PRESEN)!=0));
+ if (BiosIOGetReg(MESS_PRESEN)==0) {TaskMessV00_Test=0; TaskMessV00_Coda=0;}
+}
+

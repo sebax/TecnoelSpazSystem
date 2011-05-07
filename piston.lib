@@ -1,0 +1,24 @@
+/*
+ * piston.h
+ *
+ *  Created on: Apr 18, 2011
+ *      Author: seba
+ */
+
+#ifndef PISTON_H_
+#define PISTON_H_
+
+unsigned int TaskPiston_PC;
+
+void myPrint(char * msg);
+
+void TaskPiston_Init();
+void TaskPiston_Main();
+
+void TaskPiston_00();
+void TaskPiston_01();
+void TaskPiston_02();
+void TaskPiston_03();
+
+
+#endif /* PISTON_H_ */

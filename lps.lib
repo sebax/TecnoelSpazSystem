@@ -1,0 +1,139 @@
+/*
+ * lps.lib
+ *
+ *  Created on: Apr 18, 2011
+ *      Author: seba
+ */
+
+
+
+/*** BeginHeader TaskLPS_Init,TaskLPS_Main,Get_LPS_POSITION,Get_LPS_SPEED*/
+//pubbliche di stato
+void TaskLPS_Init();
+void TaskLPS_Main();
+//pubbliche
+void Set_LPS_POSITION(int newVal);
+int Get_LPS_POSITION();
+int Get_LPS_SPEED();
+//private di stato
+void TaskLPS_00();
+void TaskLPS_01();
+void TaskLPS_02();
+void TaskLPS_03();
+//private
+void refreshSPEED();
+void refreshPOSITION();
+/*** EndHeader */
+
+#define LPS_SPEED_MEASURE_INTERVAL 100 // Intertempo misura della velocita'
+
+
+unsigned int TaskLPS_PC;
+unsigned int TaskLPS_Counter;
+unsigned int TaskLPS_Timer00;
+
+
+
+void TaskLPS_Init()
+{
+ TaskLPS_PC=0;
+ BiosIOSetReg(LPS_SPEED,0);
+ TaskLPS_Timer00=BiosIOGetNewTimer();
+}
+
+
+void TaskLPS_Main()
+{
+	switch (TaskLPS_PC)
+	{
+		case 0: {TaskLPS_00(); break;}
+		case 1: {TaskLPS_01(); break;}
+		case 2: {TaskLPS_02(); break;}
+	}
+}
+
+
+void Set_LPS_POSITION(int newVal)   //chi la usa?? forse solo interna
+{
+ BiosIOSetReg(LPS_POSITION,newVal);
+}
+
+int Get_LPS_POSITION()
+{
+ return BiosIOGetReg(LPS_POSITION);
+}
+
+int Get_LPS_SPEED()
+{
+ return BiosIOGetReg(LPS_SPEED);
+}
+
+
+void TaskLPS_00()
+{
+	//BOOT
+	TaskLPS_Counter=0;
+	BiosIOSetTimer(TaskLPS_Timer00,LPS_SPEED_MEASURE_INTERVAL);
+	TaskLPS_PC=1;
+}
+
+void TaskLPS_01()
+{
+	//ESECUZIONE STATO
+	refreshSPEED();
+
+	//TRANSIZIONI  OCCHIO LINO
+	if (Get_ENC01_STATE())
+	{
+		//printf("LPS(%d) TRANSITION 1>2 \n",TaskLPS_PC);
+		TaskLPS_PC=2;
+	}
+}
+
+void TaskLPS_02()
+{
+	//ESECUZIONE STATO
+	refreshSPEED();
+
+	//TRANSIZIONI
+	 if (!Get_ENC01_STATE())
+	 {
+         refreshPOSITION();
+		 TaskLPS_Counter++;
+
+		 //printf("LPS(%d) TRANSITION 2>1 \n",TaskLPS_PC);
+		 TaskLPS_PC=1;
+	 }
+}
+
+
+void refreshSPEED()
+{
+
+	if (BiosIOGetTimer(TaskLPS_Timer00))
+	{
+		BiosIOSetReg(LPS_SPEED,TaskLPS_Counter);
+		BiosIOSetTimer(TaskLPS_Timer00,LPS_SPEED_MEASURE_INTERVAL);
+		//printf("LPS(%d)_SPEED=: %d \n",TaskLPS_PC, TaskLPS_Counter);   //debug
+		TaskLPS_Counter=0;
+	}
+}
+
+
+
+void refreshPOSITION()
+{
+	if (Get_ENGINE_VERSUS())
+	{
+		//STO ANDANDO AVANTI (STATO MOTORE)
+		BiosIOAddReg(LPS_POSITION,1);
+	}
+	else
+	{
+		BiosIOAddReg(LPS_POSITION,-1);
+	}
+
+   //	printf("LPS(%d)_POSITION=: %d \n",TaskLPS_PC, BiosIOGetReg(LPS_POSITION)); //debug
+}
+
+

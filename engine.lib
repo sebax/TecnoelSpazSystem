@@ -1,0 +1,143 @@
+/*
+ * engine.lib
+ *
+ *  Created on: Apr 18, 2011
+ *      Author: seba
+ */
+
+
+
+
+
+/*** BeginHeader TaskENGINE_Init,TaskENGINE_Main,Get_ENGINE_VERSUS,Set_ENGINE_VERSUS*/
+//pubbliche di stato
+void TaskENGINE_Init();
+void TaskENGINE_Main();
+//pubbliche
+char Get_ENGINE_VERSUS();				// 1:avanti 0:indietro
+void Set_ENGINE_VERSUS(char newVal);  	// 1:avanti 0:indietro
+char Get_ENGINE_ALARM();				// 1:alarm 0:no alarm
+void Set_ENGINE_ENABLE(char newVal);	// 1:enabled 0:disabled
+void Set_ENGINE_DIRSPEED(int newVal);	// 0: nospeed; -100: full backward; +100: full forward
+void Set_ENGINE_VOLTAGE(int newVal);
+//private di stato
+void TaskENGINE_00();
+void TaskENGINE_01();
+//private
+/*** EndHeader */
+
+#define ENGINE_DIRSPEED_FONDOSCALA  10000	// fondo scala segnale di controllo motore, espresso in millivolt
+
+unsigned int 	TaskENGINE_PC;
+//unsigned int TaskENGINE_Timer00;
+unsigned int TaskENGINE_Recorder;
+
+void TaskENGINE_Init()
+{
+ TaskENGINE_PC=0;
+ //BiosIOSetReg(LOCALIZZAZIONE,??);
+ //TaskENGINE_Timer00=BiosIOGetNewTimer();
+}
+
+
+void TaskENGINE_Main()
+{
+
+
+	if (TaskENGINE_Recorder!=TaskENGINE_PC)
+    {
+		printf("ENGINE TRANSIZIONE %d > %d \n",TaskENGINE_Recorder,TaskENGINE_PC); // debug
+		TaskENGINE_Recorder=TaskENGINE_PC;
+    }
+
+
+	//switch (TaskENGINE_PC)
+	//{
+	//	case 0: 	{TaskENGINE_00(); break;}
+	//	case 1: 	{TaskENGINE_01(); break;}
+	//}
+}
+
+
+void TaskENGINE_00()
+{
+	//BOOT
+	//TaskENGINE_PC=1;
+}
+
+void TaskENGINE_01()
+{
+
+
+}
+
+
+
+
+
+char Get_ENGINE_ALARM()
+{
+	return BiosIOGetBitReg(IO_AZM01_ALARM_REG,IO_AZM01_ALARM_BIT);
+}
+
+void Set_ENGINE_ENABLE(char newVal)
+{
+	BiosIOSetBitReg(IO_AZM01_ENABLE_REG,IO_AZM01_ENABLE_BIT,newVal);
+}
+
+void Set_ENGINE_DIRSPEED(int newVal)
+{
+	auto int hw_speed;
+
+	if (newVal=0)
+	{
+		hw_speed=0;
+	}
+	else
+	{
+		 if (newVal>0)
+		 {
+			 if (newVal<100)
+			 {
+				 // avanzo a una velocitˆ intermedia
+				 hw_speed=(newVal*ENGINE_DIRSPEED_FONDOSCALA)/100;
+			 }
+			 else
+			 {
+				 // avanzo a massima velocitˆ
+				 hw_speed=ENGINE_DIRSPEED_FONDOSCALA;
+			 }
+		 }
+		 else
+		 {
+			 if (newVal>-100)
+			 {
+				 // indietreggio a una velocitˆ intermedia
+				 hw_speed=ENGINE_DIRSPEED_FONDOSCALA+(-newVal*ENGINE_DIRSPEED_FONDOSCALA)/100;
+			 }
+			 else
+			 {
+				 // indietreggio a massima velocitˆ
+				 hw_speed=2*ENGINE_DIRSPEED_FONDOSCALA;
+			 }
+		 }
+	}
+	BiosIOSetReg(IO_AZM01_DIRSPEED_REG,hw_speed);
+}
+
+void Set_ENGINE_VOLTAGE(int newVal)
+{
+	BiosIOSetReg(IO_AZM01_VOLTAGE_REG,newVal);
+}
+
+char Get_ENGINE_VERSUS()
+{
+	return BiosIOGetBitReg(ENGINE_FLAGS_REG,ENGINE_VERSUS_BIT);
+}
+
+void Set_ENGINE_VERSUS(char newVal)
+{
+	BiosIOSetBitReg(ENGINE_FLAGS_REG,ENGINE_VERSUS_BIT,newVal);
+}
+
+

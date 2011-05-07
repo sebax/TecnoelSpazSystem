@@ -1,0 +1,24 @@
+/*
+ * runner.h
+ *
+ *  Created on: Apr 18, 2011
+ *      Author: seba
+ */
+
+#ifndef RUNNER_H_
+#define RUNNER_H_
+
+unsigned int TaskDriverRunner_PC;
+
+void myPrint(char * msg);
+
+void TaskDriverRunner_Init();
+void TaskDriverRunner_Main();
+
+void TaskDriverRunner_00();
+void TaskDriverRunner_01();
+void TaskDriverRunner_02();
+void TaskDriverRunner_03();
+
+
+#endif /* RUNNER_H_ */
