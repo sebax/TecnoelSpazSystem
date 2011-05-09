@@ -4,36 +4,12 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../TECNOEL_CPU40_CARSPA_0000_MAIN.c \
-../deparker.c \
-../engine.c \
-../logger.c \
-../parker.c \
-../piston.c \
-../runner.c \
-../safeguard.c \
 ../traslaholder.c 
 
 OBJS += \
-./TECNOEL_CPU40_CARSPA_0000_MAIN.o \
-./deparker.o \
-./engine.o \
-./logger.o \
-./parker.o \
-./piston.o \
-./runner.o \
-./safeguard.o \
 ./traslaholder.o 
 
 C_DEPS += \
-./TECNOEL_CPU40_CARSPA_0000_MAIN.d \
-./deparker.d \
-./engine.d \
-./logger.d \
-./parker.d \
-./piston.d \
-./runner.d \
-./safeguard.d \
 ./traslaholder.d 
 
 
